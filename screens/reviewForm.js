@@ -21,7 +21,7 @@ const validate = ({ title, body, rating }, props) => {
 
       if (!rating) {
         errors.rating = 'Field is Required';
-      } else if (parseInt(rating) >= 6 || parseInt(rating) <= 0) {
+      } else if (isNaN(parseInt(rating)) || parseInt(rating) >= 6 || parseInt(rating) <= 0) {
         errors.rating = 'Rating must be a number 1-5';
       }
     return errors;

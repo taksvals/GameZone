@@ -1,25 +1,21 @@
 import React, { useState } from 'react';
 import { Text, View, FlatList, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Modal, StyleSheet } from 'react-native';
 
-import { MaterialIcons } from '@expo/vector-icons';
+import { useSelector, useDispatch } from 'react-redux';
+import { addReview, deleteReview } from '../reducers';
 
+import { MaterialIcons } from '@expo/vector-icons';
 import { globalStyles } from '../styles/global';
 import Card from '../shared/card';
 import ReviewForm from './reviewForm';
 
 export default function Home({ navigation }) {
     const [openModal, setModalOpen] = useState(false);
-    const [reviews, setReviews] = useState([
-        {title: 'Zelda, Breath of Fresh Air', rating: 5, body: 'lorem ipsum', key: '1'},
-        {title: 'Gotta Catch Them All (again)', rating: 4, body: 'lorem ipsum', key: '2'},
-        {title: 'Not So "Final" Fantasy', rating: 3, body: 'lorem ipsum', key: '3'}
-    ]);
+    const reviews = useSelector(state => state.itemList);
+    const dispatch = useDispatch();
 
-    const addReview = (review) => {
-        review.key = Math.random().toString();
-        setReviews((currentReviews) => {
-            return [review, ...currentReviews]
-        });
+    const onSaveReview = value => {
+        dispatch(addReview(value));
         setModalOpen(false);
     }
 
@@ -35,7 +31,7 @@ export default function Home({ navigation }) {
                             style={{...styles.modalToggle, ...styles.modalClose}}
                             onPress={() => setModalOpen(false)}
                         />
-                        <ReviewForm addReview={addReview} />
+                        <ReviewForm addReview={onSaveReview} />
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
@@ -49,10 +45,17 @@ export default function Home({ navigation }) {
                 data={reviews}
                 renderItem={({ item }) => (
                     <TouchableOpacity
+                        style={styles.card}
                         onPress={() => navigation.navigate('ReviewDetails', item)}>
                         <Card>
                             <Text style={globalStyles.titleText}>{item.title}</Text>
                         </Card>
+                        <MaterialIcons 
+                            name='delete'
+                            size={24}
+                            style={styles.deleteReview}
+                            onPress={() => dispatch(deleteReview(item.key))}
+                        />
                     </TouchableOpacity>
                 )}
             />
@@ -63,6 +66,23 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
     modalContent: {
         flex: 1
+    },
+    card: {
+        borderRadius: 6,
+        elevation: 3,
+        backgroundColor: '#fff',
+        shadowOffset: {
+            width: 1,
+            height: 1
+        },
+        shadowColor: '#333',
+        shadowOpacity: 0.3,
+        shadowRadius: 2,
+        marginHorizontal: 4,
+        marginVertical: 6,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     modalToggle: {
         marginBottom: 10,
@@ -75,5 +95,9 @@ const styles = StyleSheet.create({
     modalClose: {
         marginTop: 30,
         marginBottom: 0
+    },
+    deleteReview: {
+        paddingHorizontal: 15,
+        alignSelf: 'center'
     }
 });

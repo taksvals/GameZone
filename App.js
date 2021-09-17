@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import AppLoading from 'expo-app-loading';
+import { Provider } from 'react-redux';
+
+import store from './store';
 
 import * as Font from 'expo-font';
 
@@ -15,7 +18,9 @@ export default function App() {
 
   if (fontsLoaded){
     return (
-      <Navigator />
+      <Provider store={store}>
+        <Navigator />
+      </Provider>
     );
   } else {
 	return (
